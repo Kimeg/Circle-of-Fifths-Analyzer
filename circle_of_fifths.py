@@ -16,14 +16,14 @@ class Graph:
 		self.vertices = []
 
 		for i in range(self.nVertices):
-			angle = (i*(360/self.nVertices)-90)*math.pi/180
+			angle = (i*(360/self.nVertices)+270)*math.pi/180
 
 			self.vertices.append(Vertex(i, angle, ORANGE))
 		return
 
 	def update(self):
 		N = self.nVertices
-		[self.vertices[i%N].update(self.vertices[(i+1)%N]) for i in range(N)]
+		[self.vertices[i%N].update() for i in range(N)]
 
 		if time.time()-self.t0>3:
 			self.is_dir_changed = True
@@ -88,7 +88,7 @@ class Vertex:
 			self.vy *= -1
 		return
 
-	def update(self, next_v):
+	def update(self):
 
 		if time.time()-self.t0>0.2 and self.is_hit:	
 		#	self.is_chaotic_period = not self.is_chaotic_period
@@ -107,7 +107,7 @@ class Vertex:
 		self.x = math.cos(self.angle)*PIVOT_RADIUS+HALF_WIDTH
 		self.y = math.sin(self.angle)*PIVOT_RADIUS+HALF_HEIGHT
 
-		if abs(self.angle-self.nearest_angle)<0.1:
+		if abs(self.angle-self.nearest_angle)<0.01:
 			print(self.index, 'ok')
 
 			self.nearest_angle += self.rot_dir*TWO_PI/nNote
@@ -158,7 +158,7 @@ def draw_text(i, x, y):
 
 def main():
 	#draw_pyplot()
-	nKey = 5
+	nKey = 6 
 	graph = Graph(nKey)
 
 	is_running = True
