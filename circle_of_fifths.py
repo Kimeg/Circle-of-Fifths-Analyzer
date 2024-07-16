@@ -1,4 +1,3 @@
-from playsound import playsound
 import pygame as pg
 import numpy as np
 import threading
