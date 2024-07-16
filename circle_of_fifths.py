@@ -150,11 +150,8 @@ class Vertex:
 		if abs(self.angle-self.nearest_angle)<HIT_THRESHOLD:
 
 			''' store corresponding note '''
-			note = f"{NOTES[(self.nearest_key)*KEY_INTERVAL%nNote]}{OCTAVE}"
+			AUDIO[(self.nearest_key)*KEY_INTERVAL%nNote].play()
 
-			''' assign a thread to play the audio file of the note '''
-			audio = threading.Thread(target=play_audio, args=(note,))
-			audio.start()
 
 			''' update the nearest note in the direction of the polygon rotation '''
 			self.nearest_angle += self.rot_dir*TWO_PI/nNote
@@ -174,8 +171,8 @@ class Vertex:
 			self.is_hit = True
 		return
 
-def play_audio(key: str):
-	playsound(f"keys/{key}.mp3")
+def play_audio(key: pg.mixer.Sound):
+	key.play()
 	return
 
 def draw_circle(x: float, y: float):
@@ -237,9 +234,26 @@ def main():
 	return
 
 if __name__=="__main__":
+
+	''' window size '''
+	WIDTH = 800
+	HEIGHT = 800
+
+	HALF_WIDTH = int(WIDTH/2)
+	HALF_HEIGHT = int(HEIGHT/2) 
+
+	''' pygame configuration '''
+	pg.init()
+	pg.mixer.init()
+	pg.font.init()
+	pg.display.set_caption("Circle of Fifths")
+
+	font = pg.font.Font("lemon.ttf", 30)
+
+	WINDOW = pg.display.set_mode((WIDTH, HEIGHT))
+
 	''' store all 12 notes '''
 	NOTES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
-	#NOTES = ["C", "D", "Eb", "E", "G", "A"]
 
 	nNote = len(NOTES)
 
@@ -248,6 +262,10 @@ if __name__=="__main__":
 
 	''' octave range of the notes being played upon hit '''
 	OCTAVE = 4
+
+	''' store audio of all notes '''
+	AUDIO = [pg.mixer.Sound(f"keys/{note}{OCTAVE}.mp3") for note in NOTES]
+	#NOTES = ["C", "D", "Eb", "E", "G", "A"]
 
 	''' key distance between each note '''
 	KEY_INTERVAL = 5
@@ -262,13 +280,6 @@ if __name__=="__main__":
 	BLUE = (0, 181, 255)
 	PURPLE = (224, 94, 250)
 	BLACK = (0, 0, 0)
-
-	''' window size '''
-	WIDTH = 800
-	HEIGHT = 800
-
-	HALF_WIDTH = int(WIDTH/2)
-	HALF_HEIGHT = int(HEIGHT/2) 
 	
 	''' distance of the notes from the origin '''
 	PIVOT_RADIUS = 300
@@ -287,15 +298,5 @@ if __name__=="__main__":
 	''' dimensions of the rectangle at each note '''
 	WIDTH_RECT = 30
 	HEIGHT_RECT = 30
-
-	''' pygame configuration '''
-	pg.init()
-	pg.mixer.init()
-	pg.font.init()
-	pg.display.set_caption("Circle of Fifths")
-
-	font = pg.font.Font("lemon.ttf", 30)
-
-	WINDOW = pg.display.set_mode((WIDTH, HEIGHT))
 
 	main()
